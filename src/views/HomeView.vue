@@ -57,12 +57,12 @@
           />
         </q-tab-panel>
         <q-tab-panel name="QR-code">
-          <q-responsive :ratio="1">
-            <div class="rounded-borders bg-primary text-white flex flex-center">
-              text
-            </div>
-          </q-responsive>
-          <div class="text-h4" style="font-size: 12vw">QR code</div>
+          <div class="q-pa-md" style="width: 60%; margin: auto">
+            <q-responsive :ratio="1">
+              <qrcode-stream :key="_uid" @init="onInit" @decode="onDecode" />
+            </q-responsive>
+          </div>
+          <div class="q-pa-md">請掃描QR code</div>
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -72,6 +72,7 @@
 <script setup>
 import { ref } from "vue";
 import { useQuasar } from "quasar";
+import { QrcodeStream } from "vue-qrcode-reader";
 import recordsAPI from "./../apis/records";
 
 const tab = ref("Button");
@@ -101,6 +102,22 @@ async function punch() {
       message: "連線失敗，請連線管理員",
       timeout: 1000,
     });
+  }
+}
+
+//QR code
+const msg = ref("");
+function onDecode(decodedString) {
+  msg.value = decodedString;
+}
+async function onInit(promise) {
+  try {
+    const { capabilities } = await promise;
+    console.log(capabilities);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    console.log("final");
   }
 }
 </script>
