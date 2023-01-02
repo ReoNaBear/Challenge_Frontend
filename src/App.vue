@@ -2,28 +2,11 @@
   <q-layout view="hHh LpR fFf">
     <q-header reveal elevated class="background-color text-white">
       <q-toolbar>
-        <q-btn
-          dense
-          flat
-          round
-          icon="menu"
-          class="absolute"
-          @click="toggleLeftDrawer"
-        />
         <q-toolbar-title>
           <div>泰坦打卡</div>
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      class="q-mini-drawer-hide"
-      side="left"
-      bordered
-    >
-      <!-- drawer content -->
-    </q-drawer>
 
     <q-page-container>
       <router-view />
@@ -31,9 +14,21 @@
 
     <q-footer bordered elevated class="background-color text-white">
       <q-tabs v-model="tab" class="text-white" align="justify">
-        <q-tab name="mails" icon="mail" label="Mails" />
-        <q-tab name="alarms" icon="alarm" label="Alarms" />
-        <q-tab name="movies" icon="movie" label="Movies" />
+        <q-route-tab name="home" icon="home" label="主頁" to="/dashboard" />
+        <q-route-tab
+          name="settings"
+          icon="settings"
+          label="設定"
+          to="/settings"
+        />
+        <q-btn
+          icon="logout"
+          auto-close
+          stretch
+          flat
+          label="登出"
+          @click="logout()"
+        />
       </q-tabs>
     </q-footer>
   </q-layout>
@@ -41,12 +36,31 @@
 
 <script setup>
 import { ref } from "vue";
+import { useStore } from "vuex";
+import { useQuasar } from "quasar";
+import { useRouter } from "vue-router";
 
-const leftDrawerOpen = ref(true);
-const tab = ref("mails");
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
+const store = useStore();
+const router = useRouter();
+const tab = ref("home");
+const $q = useQuasar();
+function logout() {
+  $q.dialog({
+    title: "Confirm",
+    message: "確定登出?",
+    cancel: true,
+    persistent: true,
+  }).onOk(() => {
+    store.commit("revokeAuthentication");
+    router.push({ path: "/", replace: true });
+    $q.notify({
+      progress: true,
+      position: "top",
+      type: "positive",
+      message: "您已登出",
+      timeout: 1000,
+    });
+  });
 }
 </script>
 
