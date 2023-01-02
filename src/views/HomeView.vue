@@ -1,6 +1,6 @@
 <template>
-  <div class="q-pa-md absolute-center" style="width: 85%">
-    <q-card class="q-pa-md" style="max-height: 80%">
+  <q-page class="q-pa-md vertical-middle">
+    <q-card class="q-pa-md">
       <q-tabs
         v-model="tab"
         dense
@@ -15,20 +15,22 @@
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="Button" class="row items-center no-scroll">
+        <q-tab-panel name="Button" class="column items-center no-scroll">
           <q-knob
             readonly
             v-model="value"
             :thickness="0.22"
             color="orange"
             track-color="orange-3"
-            class="text-orange col col-md-auto"
+            class="text-orange col col-xl-auto"
             size="50vw"
           >
           </q-knob>
-          <q-list class="col col-md-auto">
+          <q-list class="col col-xl-auto">
             <q-item>
-              <q-item-section class="text-h4">今日打卡</q-item-section>
+              <q-item-section class="text-h4" style="font-size: 12vw"
+                >今日打卡
+              </q-item-section>
             </q-item>
             <q-item>
               <q-item-section>
@@ -44,36 +46,61 @@
             </q-item>
           </q-list>
 
-          <!-- <q-btn
-              round
-              icon="map"
-              size="12vw"
-              color="purple"
-              class="absolute-center"
-            /> -->
+          <q-btn
+            round
+            icon="fact_check"
+            size="14vw"
+            color="purple"
+            class="absolute"
+            style="top: 7.5%"
+            @click="punch"
+          />
         </q-tab-panel>
         <q-tab-panel name="QR-code">
-          <div class="text-h4">QR code打卡</div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          <q-responsive :ratio="1">
+            <div class="rounded-borders bg-primary text-white flex flex-center">
+              text
+            </div>
+          </q-responsive>
+          <div class="text-h4" style="font-size: 12vw">QR code</div>
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
-  </div>
+  </q-page>
 </template>
 
-<script>
+<script setup>
 import { ref } from "vue";
+import { useQuasar } from "quasar";
+import recordsAPI from "./../apis/records";
 
-export default {
-  name: "HomeView",
-  components: {},
-  setup() {
-    const tab = ref("Button");
-    const value = ref(50);
-    return {
-      tab,
-      value,
-    };
-  },
-};
+const tab = ref("Button");
+const value = ref(50);
+const $q = useQuasar();
+
+async function punch() {
+  try {
+    const response = await recordsAPI.postPunchRecord();
+    console.log(response);
+    if (response.status === 200) {
+      $q.notify({
+        progress: true,
+        position: "top",
+        type: "positive",
+        message: "成功打卡",
+        timeout: 1000,
+      });
+    }
+    return;
+  } catch (error) {
+    console.log(error);
+    $q.notify({
+      progress: true,
+      position: "top",
+      type: "negative",
+      message: "連線失敗，請連線管理員",
+      timeout: 1000,
+    });
+  }
+}
 </script>

@@ -45,11 +45,12 @@
 </template>
 <script setup>
 import { ref } from "vue";
-import { Toast } from "./../utils/helpers";
+import { useQuasar } from "quasar";
 import authorizationAPI from "../apis/authorization";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
+const $q = useQuasar();
 const router = useRouter();
 const store = useStore();
 const account = ref("");
@@ -59,9 +60,12 @@ const dense = ref(false);
 async function submit() {
   try {
     if (!this.account || !this.password) {
-      Toast.fire({
-        icon: "warning",
-        title: "請填入帳號和密碼",
+      $q.notify({
+        progress: true,
+        position: "top",
+        type: "warning",
+        message: "請填入帳號和密碼",
+        timeout: 1000,
       });
       return;
     }
@@ -72,7 +76,6 @@ async function submit() {
     const { data } = response;
     const statue = data.status;
     const result = data.data;
-    console.log(data);
     if (statue !== "success") {
       throw new Error(data.message);
     }
@@ -82,17 +85,23 @@ async function submit() {
     localStorage.setItem("token", result.token);
     store.commit("setCurrentUser", result.user);
     router.push({ path: "/dashboard", replace: true });
-    Toast.fire({
-      icon: "success",
-      title: `Hi ${result.user.userName} 歡迎回來`,
+    $q.notify({
+      progress: true,
+      position: "top",
+      type: "positive",
+      message: `Hi ${result.user.userName} 歡迎回來`,
+      timeout: 1000,
     });
     return;
   } catch (error) {
     console.log(error);
     this.password = "";
-    Toast.fire({
-      icon: "warning",
-      title: "帳號或密碼有誤",
+    $q.notify({
+      progress: true,
+      position: "top",
+      type: "warning",
+      message: "帳號或密碼有誤",
+      timeout: 1000,
     });
   }
 }

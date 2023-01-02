@@ -16,7 +16,12 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
+    <q-drawer
+      v-model="leftDrawerOpen"
+      class="q-mini-drawer-hide"
+      side="left"
+      bordered
+    >
       <!-- drawer content -->
     </q-drawer>
 
@@ -37,7 +42,7 @@
 <script setup>
 import { ref } from "vue";
 
-const leftDrawerOpen = ref(false);
+const leftDrawerOpen = ref(true);
 const tab = ref("mails");
 
 function toggleLeftDrawer() {
