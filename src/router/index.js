@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
+import SettingView from "../views/SettingView.vue";
 import store from "./../store";
 
 const authorizeIsUser = (to, from, next) => {
@@ -28,6 +29,12 @@ const routes = [
     name: "home",
     beforeEnter: authorizeIsUser,
     component: HomeView,
+  },
+  {
+    path: "/settings",
+    name: "settings",
+    beforeEnter: authorizeIsUser,
+    component: SettingView,
   },
 ];
 

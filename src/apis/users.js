@@ -6,4 +6,16 @@ export default {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
   },
+  putPassword({ oldPassword, newPassword }) {
+    return apiHelper.put(
+      "users/account/password",
+      {
+        oldPassword,
+        newPassword,
+      },
+      {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      }
+    );
+  },
 };
