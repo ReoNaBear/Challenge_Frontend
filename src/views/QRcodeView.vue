@@ -46,7 +46,7 @@ async function getQRcode() {
       progress: true,
       position: "top",
       type: "negative",
-      message: "連線失敗，請連線管理員",
+      message: "System Error! Please Contact Administrator",
       timeout: 1000,
     });
   }

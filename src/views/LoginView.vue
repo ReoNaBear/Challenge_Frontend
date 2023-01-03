@@ -59,12 +59,14 @@ const dense = ref(false);
 
 async function submit() {
   try {
+    $q.loading.show();
     if (!this.account || !this.password) {
+      $q.loading.hide();
       $q.notify({
         progress: true,
         position: "top",
         type: "warning",
-        message: "請填入帳號和密碼",
+        message: "All Fields Are Required!",
         timeout: 1000,
       });
       return;
@@ -84,6 +86,7 @@ async function submit() {
     }
     localStorage.setItem("token", result.token);
     store.commit("setCurrentUser", result.user);
+    $q.loading.hide();
     if (result.user.isAdmin === 0) {
       router.push({ path: "/dashboard", replace: true });
     } else {
@@ -93,18 +96,18 @@ async function submit() {
       progress: true,
       position: "top",
       type: "positive",
-      message: `Hi ${result.user.userName} 歡迎回來`,
+      message: `Hi ${result.user.userName} Welcome Back`,
       timeout: 1000,
     });
     return;
   } catch (error) {
-    console.log(error);
+    $q.loading.hide();
     this.password = "";
     $q.notify({
       progress: true,
       position: "top",
-      type: "warning",
-      message: "帳號或密碼有誤",
+      type: "negative",
+      message: `${error.response.data.message}`,
       timeout: 1000,
     });
   }

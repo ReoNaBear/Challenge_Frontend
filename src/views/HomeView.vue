@@ -80,12 +80,14 @@ function getCurrentPosition() {
 
 async function punch() {
   try {
+    $q.loading.show();
     await getCurrentPosition();
     const response = await recordsAPI.postPunchRecord({
-      latitude: 24,
-      longitude: 127,
+      latitude: latitude.value,
+      longitude: longitude.value,
     });
     if (response.status === 200) {
+      $q.loading.hide();
       $q.notify({
         progress: true,
         position: "top",
@@ -96,6 +98,7 @@ async function punch() {
     }
     return;
   } catch (error) {
+    $q.loading.hide();
     $q.notify({
       progress: true,
       position: "top",
@@ -127,6 +130,7 @@ async function onInit(promise) {
 
 async function qrcodePunch(secretCode) {
   try {
+    $q.loading.show();
     const response = await recordsAPI.qrcodePunchRecord({
       secretCode: secretCode,
     });
@@ -141,7 +145,7 @@ async function qrcodePunch(secretCode) {
     }
     return true;
   } catch (error) {
-    console.log(error);
+    $q.loading.hide();
     $q.notify({
       progress: true,
       position: "top",

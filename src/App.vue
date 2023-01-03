@@ -82,7 +82,7 @@ if (stores.state.isAuthenticated) {
 function logout() {
   $q.dialog({
     title: "Confirm",
-    message: "確定登出?",
+    message: "Logout Anyway?",
     cancel: true,
     persistent: true,
   }).onOk(() => {
@@ -92,7 +92,7 @@ function logout() {
       progress: true,
       position: "top",
       type: "positive",
-      message: "您已登出",
+      message: "Logout Success",
       timeout: 1000,
     });
   });

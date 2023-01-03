@@ -82,22 +82,25 @@ const dense = ref(false);
 
 async function changePassword() {
   try {
+    $q.loading.show();
     if (!this.oldPassword || !this.newPassword || !this.checkPassword) {
+      $q.loading.hide();
       $q.notify({
         progress: true,
         position: "top",
         type: "negative",
-        message: "所有欄位都要填入",
+        message: "All Fields Are Required!",
         timeout: 1000,
       });
       return;
     }
     if (this.newPassword !== this.checkPassword) {
+      $q.loading.hide();
       $q.notify({
         progress: true,
         position: "top",
         type: "negative",
-        message: "兩次輸入的密碼不一致",
+        message: "Please Check Your New Password Again",
         timeout: 1000,
       });
       return;
@@ -108,26 +111,28 @@ async function changePassword() {
     });
     const { data } = response;
     if (data.status === "success") {
+      $q.loading.hide();
       $q.notify({
         progress: true,
         position: "top",
         type: "positive",
-        message: "密碼修改成功",
+        message: "Action Success!",
         timeout: 1000,
       });
       router.push({ path: "/dashboard", replace: true });
       return;
     } else {
+      $q.loading.hide();
       $q.notify({
         progress: true,
         position: "top",
         type: "negative",
-        message: "發生錯誤，請聯繫管理員",
+        message: "System Error! Please Contact Administrator",
         timeout: 1000,
       });
     }
   } catch (error) {
-    console.log(error);
+    $q.loading.hide();
     this.newPassword = "";
     this.oldPassword = "";
     this.checkPassword = "";
@@ -135,7 +140,7 @@ async function changePassword() {
       progress: true,
       position: "top",
       type: "negative",
-      message: "密碼錯誤，請在填一次",
+      message: `${error.response.data.message}`,
       timeout: 1000,
     });
   }

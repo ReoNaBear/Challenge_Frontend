@@ -1,5 +1,7 @@
 import { createStore } from "vuex";
 import usersAPI from "./../apis/users";
+import { useQuasar } from "quasar";
+const $q = useQuasar();
 
 const state = {
   currentUser: {
@@ -45,8 +47,13 @@ const actions = {
       });
       return data.data.isAdmin;
     } catch (error) {
-      console.log("error", error);
-      console.error(error.message);
+      $q.notify({
+        progress: true,
+        position: "top",
+        type: "negative",
+        message: `${error.response.data.message}`,
+        timeout: 1000,
+      });
       commit("revokeAuthentication");
       return false;
     }
