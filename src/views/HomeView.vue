@@ -15,46 +15,33 @@
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="Button" class="column items-center no-scroll">
+        <q-tab-panel name="Button" class="no-scroll">
           <q-knob
             readonly
             v-model="value"
             :thickness="0.22"
             color="orange"
             track-color="orange-3"
-            class="text-orange col col-xl-auto"
-            size="50vw"
+            class=""
+            size="40vw"
           >
           </q-knob>
-          <q-list class="col col-xl-auto">
-            <q-item>
-              <q-item-section class="text-h4" style="font-size: 12vw"
-                >今日打卡
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-section>
-                <q-item-label overline>上班</q-item-label>
-                <q-item-label>07:56:02</q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-section>
-                <q-item-label overline>下班</q-item-label>
-                <q-item-label>15:56:02</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-
           <q-btn
             round
             icon="fact_check"
-            size="14vw"
+            size="10.5vw"
             color="purple"
             class="absolute"
-            style="top: 7.5%"
+            style="top: 50%; left: 50%; transform: translate(-50%, -107%)"
             @click="punch"
           />
+          <q-list class="" style="font-size: 4vw; top: 18%">
+            <div style="font-size: 8vw">今日打卡</div>
+            <div>上班</div>
+            <div>07:56:02</div>
+            <div>下班</div>
+            <div>15:56:02</div>
+          </q-list>
         </q-tab-panel>
         <q-tab-panel name="QR-code">
           <div class="q-pa-md" style="width: 60%; margin: auto">
@@ -62,7 +49,7 @@
               <qrcode-stream :key="_uid" @init="onInit" @decode="onDecode" />
             </q-responsive>
           </div>
-          <div class="q-pa-md">請掃描QR code</div>
+          <div class="q-pa-md" style="font-size: 4vw">請掃描QR code</div>
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -82,7 +69,6 @@ const $q = useQuasar();
 async function punch() {
   try {
     const response = await recordsAPI.postPunchRecord();
-    console.log(response);
     if (response.status === 200) {
       $q.notify({
         progress: true,
@@ -94,7 +80,6 @@ async function punch() {
     }
     return;
   } catch (error) {
-    console.log(error);
     $q.notify({
       progress: true,
       position: "top",
@@ -107,9 +92,12 @@ async function punch() {
 
 //QR code
 const msg = ref("");
+
 function onDecode(decodedString) {
   msg.value = decodedString;
+  qrcodePunch(msg.value);
 }
+
 async function onInit(promise) {
   try {
     const { capabilities } = await promise;
@@ -118,6 +106,33 @@ async function onInit(promise) {
     console.log(error);
   } finally {
     console.log("final");
+  }
+}
+
+async function qrcodePunch(secretCode) {
+  try {
+    const response = await recordsAPI.qrcodePunchRecord({
+      secretCode: secretCode,
+    });
+    if (response.status === 200) {
+      $q.notify({
+        progress: true,
+        position: "top",
+        type: "positive",
+        message: "成功打卡",
+        timeout: 1000,
+      });
+    }
+    return true;
+  } catch (error) {
+    console.log(error);
+    $q.notify({
+      progress: true,
+      position: "top",
+      type: "negative",
+      message: "發生錯誤，請稍後再試一次",
+      timeout: 1000,
+    });
   }
 }
 </script>

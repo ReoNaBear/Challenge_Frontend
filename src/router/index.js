@@ -1,13 +1,32 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
+import AdminView from "../views/AdminView.vue";
 import SettingView from "../views/SettingView.vue";
+import QRcodeView from "../views/QRcodeView.vue";
 import store from "./../store";
 
 const authorizeIsUser = (to, from, next) => {
   const currentUser = store.state.currentUser;
-  if (currentUser && currentUser.isAdmin === "1") {
+  if (!currentUser) {
     next("/login");
+    return;
+  }
+  if (currentUser && currentUser.isAdmin === 1) {
+    next("/admin");
+    return;
+  }
+  next();
+};
+
+const authorizeIsAdmin = (to, from, next) => {
+  const currentUser = store.state.currentUser;
+  if (!currentUser) {
+    next("/login");
+    return;
+  }
+  if (currentUser && currentUser.isAdmin === 0) {
+    next("/dashboard");
     return;
   }
   next();
@@ -23,6 +42,18 @@ const routes = [
     path: "/login",
     name: "login",
     component: LoginView,
+  },
+  {
+    path: "/admin",
+    name: "admin",
+    beforeEnter: authorizeIsAdmin,
+    component: AdminView,
+  },
+  {
+    path: "/qrcode",
+    name: "qrcode",
+    beforeEnter: authorizeIsAdmin,
+    component: QRcodeView,
   },
   {
     path: "/dashboard",
@@ -48,10 +79,8 @@ router.beforeEach(async (to, from, next) => {
   let isAuthenticated;
   if (token) {
     isAuthenticated = await store.dispatch("fetchCurrentUser");
-    console.log(isAuthenticated);
   }
   const userPathsWithoutAuthentication = ["login"];
-
   if (
     typeof isAuthenticated === "undefined" &&
     !userPathsWithoutAuthentication.includes(to.name)
@@ -63,7 +92,11 @@ router.beforeEach(async (to, from, next) => {
     typeof isAuthenticated !== "undefined" &&
     userPathsWithoutAuthentication.includes(to.name)
   ) {
-    next("/dashboard");
+    if (store.currentUser.isAdmin === 0) {
+      next("/dashboard");
+      return;
+    }
+    next("/admin");
     return;
   }
   next();

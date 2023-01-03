@@ -12,8 +12,18 @@
       <router-view />
     </q-page-container>
 
-    <q-footer bordered elevated class="background-color text-white">
-      <q-tabs v-model="tab" class="text-white" align="justify">
+    <q-footer
+      v-if="isAuth"
+      bordered
+      elevated
+      class="background-color text-white"
+    >
+      <q-tabs
+        v-if="isAdmin === 0"
+        v-model="tab"
+        class="text-white"
+        align="justify"
+      >
         <q-route-tab name="home" icon="home" label="主頁" to="/dashboard" />
         <q-route-tab
           name="settings"
@@ -30,20 +40,45 @@
           @click="logout()"
         />
       </q-tabs>
+      <q-tabs v-else v-model="tab" class="text-white" align="justify">
+        <q-route-tab name="home" icon="home" label="主頁" to="/admin" />
+        <q-route-tab
+          name="qrcode"
+          icon="qr_code_2"
+          label="QRcode"
+          to="/qrcode"
+        />
+        <q-btn
+          icon="logout"
+          auto-close
+          stretch
+          flat
+          label="登出"
+          @click="logout()"
+        />
+      </q-tabs>
     </q-footer>
   </q-layout>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
+import stores from "./store";
 
+const isAuth = computed(() => stores.state.isAuthenticated);
+const isAdmin = computed(() => stores.state.currentUser.isAdmin);
 const store = useStore();
 const router = useRouter();
 const tab = ref("home");
 const $q = useQuasar();
+
+if (stores.state.isAuthenticated) {
+  isAuth.value = true;
+}
+
 function logout() {
   $q.dialog({
     title: "Confirm",

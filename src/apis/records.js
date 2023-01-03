@@ -6,4 +6,15 @@ export default {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
   },
+  qrcodePunchRecord({ secretCode }) {
+    return apiHelper.post(
+      "/records/qrcode_punch_record",
+      {
+        secretCode,
+      },
+      {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      }
+    );
+  },
 };

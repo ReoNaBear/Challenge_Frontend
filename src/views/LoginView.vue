@@ -84,7 +84,11 @@ async function submit() {
     }
     localStorage.setItem("token", result.token);
     store.commit("setCurrentUser", result.user);
-    router.push({ path: "/dashboard", replace: true });
+    if (result.user.isAdmin === 0) {
+      router.push({ path: "/dashboard", replace: true });
+    } else {
+      router.push({ path: "/admin", replace: true });
+    }
     $q.notify({
       progress: true,
       position: "top",
