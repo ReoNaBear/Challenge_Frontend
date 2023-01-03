@@ -1,10 +1,17 @@
 import { apiHelper } from "./../utils/helpers";
 const getToken = () => localStorage.getItem("token");
 export default {
-  postPunchRecord() {
-    return apiHelper.post("/records/punch_record", null, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
+  postPunchRecord({ latitude, longitude }) {
+    return apiHelper.post(
+      "/records/punch_record",
+      {
+        latitude: latitude,
+        longitude: longitude,
+      },
+      {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      }
+    );
   },
   qrcodePunchRecord({ secretCode }) {
     return apiHelper.post(

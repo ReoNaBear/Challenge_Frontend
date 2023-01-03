@@ -60,21 +60,37 @@
 import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { QrcodeStream } from "vue-qrcode-reader";
+import { Geolocation } from "@capacitor/geolocation";
 import recordsAPI from "./../apis/records";
 
 const tab = ref("Button");
 const value = ref(50);
 const $q = useQuasar();
+const latitude = ref("");
+const longitude = ref("");
+const position = ref("");
+
+function getCurrentPosition() {
+  Geolocation.getCurrentPosition().then((newPosition) => {
+    position.value = newPosition;
+  });
+  latitude.value = position.value.coords.latitude;
+  longitude.value = position.value.coords.longitude;
+}
 
 async function punch() {
   try {
-    const response = await recordsAPI.postPunchRecord();
+    await getCurrentPosition();
+    const response = await recordsAPI.postPunchRecord({
+      latitude: 24,
+      longitude: 127,
+    });
     if (response.status === 200) {
       $q.notify({
         progress: true,
         position: "top",
         type: "positive",
-        message: "成功打卡",
+        message: "Action Success!",
         timeout: 1000,
       });
     }
@@ -84,7 +100,7 @@ async function punch() {
       progress: true,
       position: "top",
       type: "negative",
-      message: "連線失敗，請連線管理員",
+      message: `${error.response.data.message}`,
       timeout: 1000,
     });
   }
@@ -119,7 +135,7 @@ async function qrcodePunch(secretCode) {
         progress: true,
         position: "top",
         type: "positive",
-        message: "成功打卡",
+        message: "Action Success!",
         timeout: 1000,
       });
     }
@@ -130,7 +146,7 @@ async function qrcodePunch(secretCode) {
       progress: true,
       position: "top",
       type: "negative",
-      message: "發生錯誤，請稍後再試一次",
+      message: `${error.response.data.message}`,
       timeout: 1000,
     });
   }
