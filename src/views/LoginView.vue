@@ -60,7 +60,7 @@ const dense = ref(false);
 async function submit() {
   try {
     $q.loading.show();
-    if (!this.account || !this.password) {
+    if (!account.value || !password.value) {
       $q.loading.hide();
       $q.notify({
         progress: true,
@@ -72,8 +72,8 @@ async function submit() {
       return;
     }
     const response = await authorizationAPI.signIn({
-      account: this.account,
-      password: this.password,
+      account: account.value,
+      password: password.value,
     });
     const { data } = response;
     const statue = data.status;
@@ -102,7 +102,7 @@ async function submit() {
     return;
   } catch (error) {
     $q.loading.hide();
-    this.password = "";
+    password.value = "";
     $q.notify({
       progress: true,
       position: "top",

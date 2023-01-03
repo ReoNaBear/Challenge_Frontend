@@ -83,7 +83,7 @@ const dense = ref(false);
 async function changePassword() {
   try {
     $q.loading.show();
-    if (!this.oldPassword || !this.newPassword || !this.checkPassword) {
+    if (!oldPassword.value || !newPassword.value || !checkPassword.value) {
       $q.loading.hide();
       $q.notify({
         progress: true,
@@ -94,7 +94,7 @@ async function changePassword() {
       });
       return;
     }
-    if (this.newPassword !== this.checkPassword) {
+    if (newPassword.value !== checkPassword.value) {
       $q.loading.hide();
       $q.notify({
         progress: true,
@@ -106,8 +106,8 @@ async function changePassword() {
       return;
     }
     const response = await usersAPI.putPassword({
-      oldPassword: this.oldPassword,
-      newPassword: this.newPassword,
+      oldPassword: oldPassword.value,
+      newPassword: newPassword.value,
     });
     const { data } = response;
     if (data.status === "success") {
@@ -133,9 +133,9 @@ async function changePassword() {
     }
   } catch (error) {
     $q.loading.hide();
-    this.newPassword = "";
-    this.oldPassword = "";
-    this.checkPassword = "";
+    newPassword.value = "";
+    oldPassword.value = "";
+    checkPassword.value = "";
     $q.notify({
       progress: true,
       position: "top",
