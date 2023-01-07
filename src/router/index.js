@@ -36,7 +36,7 @@ const routes = [
   {
     path: "/",
     name: "root",
-    redirect: "/login",
+    redirect: "/dashboard",
   },
   {
     path: "/login",
@@ -58,7 +58,10 @@ const routes = [
   {
     path: "/dashboard",
     name: "home",
-    beforeEnter: authorizeIsUser,
+    beforeEnter: () => {
+      authorizeIsUser;
+      store.dispatch("fetchCurrentPunchData");
+    },
     component: HomeView,
   },
   {

@@ -18,9 +18,9 @@
         <q-tab-panel name="Button" class="no-scroll">
           <q-knob
             readonly
-            v-model="value"
+            v-model="duration"
             :thickness="0.22"
-            color="orange"
+            :color="color"
             track-color="orange-3"
             class=""
             size="40vw"
@@ -38,9 +38,9 @@
           <q-list class="" style="font-size: 4vw; top: 18%">
             <div style="font-size: 8vw">今日打卡</div>
             <div>上班</div>
-            <div>07:56:02</div>
+            <div>{{ workTime }}</div>
             <div>下班</div>
-            <div>15:56:02</div>
+            <div>{{ offWorkTime }}</div>
           </q-list>
         </q-tab-panel>
         <q-tab-panel name="QR-code">
@@ -57,18 +57,30 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
 import { QrcodeStream } from "vue-qrcode-reader";
 import { Geolocation } from "@capacitor/geolocation";
 import recordsAPI from "./../apis/records";
+import store from "./../store";
 
 const tab = ref("Button");
-const value = ref(50);
 const $q = useQuasar();
 const latitude = ref("");
 const longitude = ref("");
 const position = ref("");
+const workTime = computed(() => store.state.currentPunchData.workTime);
+const offWorkTime = computed(() => store.state.currentPunchData.offWorkTime);
+const duration = computed(() => store.state.currentPunchData.duration / 5.4);
+const color = computed(() => {
+  if (duration.value >= 100) {
+    return "green";
+  } else if (duration.value >= 50) {
+    return "orange";
+  } else {
+    return "red";
+  }
+});
 
 function getCurrentPosition() {
   Geolocation.getCurrentPosition().then((newPosition) => {
@@ -95,6 +107,7 @@ async function punch() {
         message: "Action Success!",
         timeout: 1000,
       });
+      store.dispatch("fetchCurrentPunchData");
     }
     return;
   } catch (error) {
@@ -123,6 +136,13 @@ async function onInit(promise) {
     console.log(capabilities);
   } catch (error) {
     console.log(error);
+    $q.notify({
+      progress: true,
+      position: "top",
+      type: "negative",
+      message: "Something Wrong! Please Contact Administrator",
+      timeout: 1000,
+    });
   } finally {
     console.log("final");
   }
@@ -135,6 +155,7 @@ async function qrcodePunch(secretCode) {
       secretCode: secretCode,
     });
     if (response.status === 200) {
+      $q.loading.hide();
       $q.notify({
         progress: true,
         position: "top",
@@ -142,6 +163,8 @@ async function qrcodePunch(secretCode) {
         message: "Action Success!",
         timeout: 1000,
       });
+      store.dispatch("fetchCurrentPunchData");
+      tab.value = "Button";
     }
     return true;
   } catch (error) {

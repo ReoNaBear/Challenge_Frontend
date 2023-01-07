@@ -12,6 +12,11 @@ const state = {
     empNo: "",
     isBanned: "",
   },
+  currentPunchData: {
+    workTime: "",
+    offWorkTime: "",
+    duration: 0,
+  },
   isAuthenticated: false,
   token: "",
 };
@@ -25,6 +30,12 @@ const mutations = {
     };
     state.isAuthenticated = true;
     state.token = localStorage.getItem("token");
+  },
+  setCurrentPunchData(state, currentPunchData) {
+    state.currentPunchData = {
+      ...state.currentPunchData,
+      ...currentPunchData,
+    };
   },
   revokeAuthentication(state) {
     state.currentUser = {};
@@ -55,6 +66,28 @@ const actions = {
         timeout: 1000,
       });
       commit("revokeAuthentication");
+      return false;
+    }
+  },
+  async fetchCurrentPunchData({ commit }) {
+    try {
+      const { data } = await usersAPI.getCurrentPunchData();
+      console.log(data);
+      const { workTime, offWorkTime, duration } = data.data;
+      commit("setCurrentPunchData", {
+        workTime,
+        offWorkTime,
+        duration,
+      });
+      return true;
+    } catch (error) {
+      $q.notify({
+        progress: true,
+        position: "top",
+        type: "negative",
+        message: `${error.response.data.message}`,
+        timeout: 1000,
+      });
       return false;
     }
   },

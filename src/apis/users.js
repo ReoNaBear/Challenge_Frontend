@@ -6,6 +6,11 @@ export default {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
   },
+  getCurrentPunchData() {
+    return apiHelper.get("/users/current_punch_data", {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+  },
   putPassword({ oldPassword, newPassword }) {
     return apiHelper.put(
       "users/account/password",

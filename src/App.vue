@@ -87,7 +87,7 @@ function logout() {
     persistent: true,
   }).onOk(() => {
     store.commit("revokeAuthentication");
-    router.push({ path: "/", replace: true });
+    router.push({ path: "/login", replace: true });
     $q.notify({
       progress: true,
       position: "top",
