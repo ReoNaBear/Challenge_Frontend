@@ -1,7 +1,7 @@
 const { defineConfig } = require("@vue/cli-service");
 module.exports = defineConfig({
   transpileDependencies: ["quasar"],
-  publicPath: "/Challenge_Frontend/",
+  publicPath: "/",
   pluginOptions: {
     quasar: {
       importStrategy: "kebab",
