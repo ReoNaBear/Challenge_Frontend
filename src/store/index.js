@@ -13,8 +13,8 @@ const state = {
     isBanned: "",
   },
   currentPunchData: {
-    workTime: "",
-    offWorkTime: "",
+    workTime: "無紀錄",
+    offWorkTime: "無紀錄",
     duration: 0,
   },
   isAuthenticated: false,
@@ -36,6 +36,10 @@ const mutations = {
       ...state.currentPunchData,
       ...currentPunchData,
     };
+    if (state.currentPunchData.workTime === null)
+      state.currentPunchData.workTime = "無紀錄";
+    if (state.currentPunchData.offWorkTime === null)
+      state.currentPunchData.offWorkTime = "無紀錄";
   },
   revokeAuthentication(state) {
     state.currentUser = {};
