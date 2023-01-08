@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onBeforeMount, onBeforeUnmount } from "vue";
 import { useQuasar } from "quasar";
 import QrcodeVue from "qrcode.vue";
 import adminsAPI from "../apis/admins";
@@ -23,7 +23,8 @@ let value = ref("");
 let timer = "";
 let newValue = "";
 
-onMounted(() => {
+onBeforeMount(() => {
+  getQRcode();
   timer = setInterval(() => {
     getQRcode();
   }, 10000);
@@ -35,13 +36,16 @@ onBeforeUnmount(() => {
 
 async function getQRcode() {
   try {
+    $q.loading.show();
     const response = await adminsAPI.getQRcode();
     newValue = response.data.data.QRcodeSecret;
     if (value.value !== newValue) {
       value.value = newValue;
     }
+    $q.loading.hide();
     return;
   } catch (error) {
+    $q.loading.hide();
     $q.notify({
       progress: true,
       position: "top",
