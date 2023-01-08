@@ -29,10 +29,10 @@
           <q-btn
             round
             icon="fact_check"
-            size="10.5vw"
+            size="11vw"
             color="purple"
             class="absolute"
-            style="top: 50%; left: 50%; transform: translate(-50%, -107%)"
+            style="top: 50%; left: 50%; transform: translate(-50%, -104%)"
             @click="punch"
           />
           <q-list class="" style="font-size: 4vw; top: 18%">
