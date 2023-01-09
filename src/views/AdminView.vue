@@ -4,38 +4,40 @@
       <q-table :columns="columns" :rows="users" row-key="userName" :key="key">
         <template v-slot:body-cell-status="props">
           <q-td :props="props" class="q-gutter-sm">
-            <q-btn
-              v-if="props.row.isBanned === 0"
-              size="sm"
-              round
-              color="secondary"
-              icon="link"
-              @click="changeBannedStatus(props.row.userId, false)"
-            />
-            <q-btn
-              v-else
-              round
-              size="sm"
-              color="red"
-              icon="link_off"
-              @click="changeBannedStatus(props.row.userId, true)"
-            />
-            <q-btn
-              v-if="props.row.status === 0"
-              size="sm"
-              round
-              color="red"
-              icon="cancel"
-              @click="changePunchStatus(props.row.userId, true)"
-            />
-            <q-btn
-              v-else
-              round
-              size="sm"
-              color="secondary"
-              icon="check_circle"
-              @click="changePunchStatus(props.row.userId, false)"
-            />
+            <template v-if="props.row.isAdmin === 0">
+              <q-btn
+                v-if="props.row.isBanned === 0"
+                size="sm"
+                round
+                color="secondary"
+                icon="link"
+                @click="changeBannedStatus(props.row.userId, false)"
+              />
+              <q-btn
+                v-else
+                round
+                size="sm"
+                color="red"
+                icon="link_off"
+                @click="changeBannedStatus(props.row.userId, true)"
+              />
+              <q-btn
+                v-if="props.row.status === 0"
+                size="sm"
+                round
+                color="red"
+                icon="cancel"
+                @click="changePunchStatus(props.row.userId, true)"
+              />
+              <q-btn
+                v-else
+                round
+                size="sm"
+                color="secondary"
+                icon="check_circle"
+                @click="changePunchStatus(props.row.userId, false)"
+              />
+            </template>
           </q-td>
           <q-dialog v-model="info" full-height full-width>
             <q-card class="column full-width full-height">
