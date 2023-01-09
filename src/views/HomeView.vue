@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import { useQuasar } from "quasar";
 import { QrcodeStream } from "vue-qrcode-reader";
 import { Geolocation } from "@capacitor/geolocation";
@@ -178,4 +178,8 @@ async function qrcodePunch(secretCode) {
     });
   }
 }
+
+onBeforeMount(() => {
+  store.dispatch("fetchCurrentPunchData");
+});
 </script>

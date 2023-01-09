@@ -58,10 +58,7 @@ const routes = [
   {
     path: "/dashboard",
     name: "home",
-    beforeEnter: () => {
-      authorizeIsUser;
-      store.dispatch("fetchCurrentPunchData");
-    },
+    beforeEnter: authorizeIsUser,
     component: HomeView,
   },
   {

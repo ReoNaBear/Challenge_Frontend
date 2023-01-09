@@ -37,6 +37,98 @@
               @click="changePunchStatus(props.row.userId, false)"
             />
           </q-td>
+          <q-dialog v-model="info" full-height full-width>
+            <q-card class="column full-width full-height">
+              <q-card-section>
+                <div class="text-h6">基本資料</div>
+              </q-card-section>
+              <div class="q-pa-md">
+                <q-list>
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label>姓名</q-item-label>
+                      <q-item-label>{{ targetUser.row.userName }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-separator spaced inset />
+
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label>工號</q-item-label>
+                      <q-item-label>{{ targetUser.row.empNo }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-separator spaced inset />
+
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label>Email</q-item-label>
+                      <q-item-label>{{
+                        targetUser.row.userEmail
+                      }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-separator spaced inset />
+
+                  <q-item v-if="targetUser.row.isAdmin === 0">
+                    <q-item-section>
+                      <q-item-label>本月缺席次數</q-item-label>
+                      <q-item-label>{{
+                        targetUser.noneAttendDays
+                      }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-separator spaced inset />
+
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label>變更密碼</q-item-label>
+                      <q-item-label></q-item-label>
+                      <q-input
+                        type="password"
+                        v-model="password"
+                        label="password"
+                        :dense="dense"
+                        class="q-pb-md"
+                      >
+                        <template v-slot:prepend>
+                          <q-icon name="password" />
+                        </template>
+                        <template v-slot:append>
+                          <q-icon
+                            name="close"
+                            @click="password = ''"
+                            class="cursor-pointer"
+                          />
+                        </template>
+                      </q-input>
+                    </q-item-section>
+
+                    <q-item-section side>
+                      <q-btn
+                        square
+                        color="brown-5"
+                        icon="directions"
+                        @click="changePassword(targetUser.row.userId)"
+                      />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </div>
+              <q-card-actions align="right" class="bg-white text-teal">
+                <q-btn flat label="OK" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+        </template>
+        <template v-slot:body-cell-info="props">
+          <q-td :props="props" class="q-gutter-sm">
+            <q-btn size="sm" round icon="info" @click="openDialog(props)" />
+          </q-td>
         </template>
       </q-table>
     </q-card>
@@ -48,8 +140,15 @@ import { useQuasar } from "quasar";
 import adminsAPI from "../apis/admins";
 import { onBeforeMount, ref } from "vue";
 const $q = useQuasar();
+const password = ref("");
 
 const columns = [
+  {
+    name: "info",
+    align: "center",
+    label: "細節",
+    field: "info",
+  },
   {
     name: "empNo",
     label: "工號",
@@ -71,6 +170,8 @@ const columns = [
   },
 ];
 const key = ref(0);
+const preDate = ref("");
+const info = ref(false);
 let users = [];
 
 async function getUsers() {
@@ -78,7 +179,8 @@ async function getUsers() {
     key.value = 0;
     $q.loading.show();
     const response = await adminsAPI.getUsers();
-    const data = response.data.data;
+    const data = response.data.data.users;
+    preDate.value = response.data.data.date;
     let newData = [];
     for (let i = 0; i < data.length; i++) {
       if (data[i].presentRecord !== null) {
@@ -108,7 +210,6 @@ async function changeBannedStatus(userId, status) {
   try {
     $q.loading.show();
     const response = await adminsAPI.updateBannedStatus(userId, status);
-    console.log(response);
     if (response.status === 200) {
       $q.notify({
         progress: true,
@@ -134,7 +235,7 @@ async function changeBannedStatus(userId, status) {
 
 async function changePunchStatus(userId, status) {
   try {
-    let date = "2023-01-07";
+    let date = preDate.value;
     $q.loading.show();
     const response = await adminsAPI.updatePunchStatus(userId, status, date);
     console.log(response);
@@ -148,6 +249,73 @@ async function changePunchStatus(userId, status) {
       });
     }
     getUsers();
+    return;
+  } catch (error) {
+    $q.loading.hide();
+    $q.notify({
+      progress: true,
+      position: "top",
+      type: "negative",
+      message: `${error.response.data.message}`,
+      timeout: 1000,
+    });
+  }
+}
+
+async function changePassword(userId) {
+  try {
+    $q.loading.show();
+    if (!password.value) {
+      $q.loading.hide();
+      $q.notify({
+        progress: true,
+        position: "top",
+        type: "negative",
+        message: "All Fields Are Required!",
+        timeout: 1000,
+      });
+      return;
+    }
+    const response = await adminsAPI.putPassword({
+      userId: userId,
+      newPassword: password.value,
+    });
+    const { data } = response;
+    if (data.status === "success") {
+      $q.loading.hide();
+      $q.notify({
+        progress: true,
+        position: "top",
+        type: "positive",
+        message: "Action Success!",
+        timeout: 1000,
+      });
+      return;
+    }
+  } catch (error) {
+    $q.loading.hide();
+    password.value = "";
+    $q.notify({
+      progress: true,
+      position: "top",
+      type: "negative",
+      message: `${error.response.data.message}`,
+      timeout: 1000,
+    });
+  }
+}
+
+let targetUser = null;
+
+async function openDialog(props) {
+  try {
+    targetUser = props;
+    const response = await adminsAPI.getMonthRecord(props.row.userId);
+    if (response.status === 200) {
+      console.log(response);
+      info.value = true;
+      targetUser.noneAttendDays = response.data.data.noneAttendDays;
+    }
     return;
   } catch (error) {
     $q.loading.hide();

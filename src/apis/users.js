@@ -13,7 +13,7 @@ export default {
   },
   putPassword({ oldPassword, newPassword }) {
     return apiHelper.put(
-      "users/account/password",
+      "users/password",
       {
         oldPassword,
         newPassword,
