@@ -76,7 +76,6 @@ const actions = {
   async fetchCurrentPunchData({ commit }) {
     try {
       const { data } = await usersAPI.getCurrentPunchData();
-      console.log(data);
       const { workTime, offWorkTime, duration } = data.data;
       commit("setCurrentPunchData", {
         workTime,

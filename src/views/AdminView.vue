@@ -240,7 +240,6 @@ async function changePunchStatus(userId, status) {
     let date = preDate.value;
     $q.loading.show();
     const response = await adminsAPI.updatePunchStatus(userId, status, date);
-    console.log(response);
     if (response.status === 200) {
       $q.notify({
         progress: true,
@@ -314,7 +313,6 @@ async function openDialog(props) {
     targetUser = props;
     const response = await adminsAPI.getMonthRecord(props.row.userId);
     if (response.status === 200) {
-      console.log(response);
       info.value = true;
       targetUser.noneAttendDays = response.data.data.noneAttendDays;
     }
