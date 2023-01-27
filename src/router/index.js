@@ -4,6 +4,7 @@ import LoginView from "../views/LoginView.vue";
 import AdminView from "../views/AdminView.vue";
 import SettingView from "../views/SettingView.vue";
 import QRcodeView from "../views/QRcodeView.vue";
+import NotFound from "../views/NotFound.vue";
 import store from "./../store";
 
 const authorizeIsUser = (to, from, next) => {
@@ -66,6 +67,11 @@ const routes = [
     name: "settings",
     beforeEnter: authorizeIsUser,
     component: SettingView,
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "not-found",
+    component: NotFound,
   },
 ];
 
