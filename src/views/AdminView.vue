@@ -90,24 +90,7 @@
                     <q-item-section>
                       <q-item-label>變更密碼</q-item-label>
                       <q-item-label></q-item-label>
-                      <q-input
-                        type="password"
-                        v-model="password"
-                        label="password"
-                        :dense="dense"
-                        class="q-pb-md"
-                      >
-                        <template v-slot:prepend>
-                          <q-icon name="password" />
-                        </template>
-                        <template v-slot:append>
-                          <q-icon
-                            name="close"
-                            @click="password = ''"
-                            class="cursor-pointer"
-                          />
-                        </template>
-                      </q-input>
+                      <BaseInput v-bind="prop.password" v-model="password" />
                     </q-item-section>
 
                     <q-item-section side>
@@ -141,8 +124,19 @@
 import { useQuasar } from "quasar";
 import adminsAPI from "../apis/admins";
 import { onBeforeMount, ref } from "vue";
+import { BaseInput } from "@/components";
+
 const $q = useQuasar();
 const password = ref("");
+
+const prop = {
+  password: {
+    label: "更改密碼",
+    dense: false,
+    icon: "password",
+    type: "password",
+  },
+};
 
 const columns = [
   {
@@ -284,6 +278,7 @@ async function changePassword(userId) {
     const { data } = response;
     if (data.status === "success") {
       $q.loading.hide();
+      password.value = "";
       $q.notify({
         progress: true,
         position: "top",

@@ -2,37 +2,8 @@
   <div class="q-pa-md absolute-center" style="width: 85%">
     <q-card class="q-pa-md fit flex">
       <q-form @submit.stop.prevent="submit()" class="fit">
-        <q-input
-          v-model="account"
-          label="account"
-          :dense="dense"
-          class="q-pb-md"
-        >
-          <template v-slot:prepend>
-            <q-icon name="person" />
-          </template>
-          <template v-slot:append>
-            <q-icon name="close" @click="account = ''" class="cursor-pointer" />
-          </template>
-        </q-input>
-        <q-input
-          type="password"
-          v-model="password"
-          label="password"
-          :dense="dense"
-          class="q-pb-md"
-        >
-          <template v-slot:prepend>
-            <q-icon name="password" />
-          </template>
-          <template v-slot:append>
-            <q-icon
-              name="close"
-              @click="password = ''"
-              class="cursor-pointer"
-            />
-          </template>
-        </q-input>
+        <BaseInput v-bind="props.account" v-model="account" />
+        <BaseInput v-bind="props.password" v-model="password" />
         <q-btn
           class="full-width"
           color="indigo-3"
@@ -49,13 +20,27 @@ import { useQuasar } from "quasar";
 import authorizationAPI from "../apis/authorization";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { BaseInput } from "@/components";
 
 const $q = useQuasar();
 const router = useRouter();
 const store = useStore();
 const account = ref("");
 const password = ref("");
-const dense = ref(false);
+
+const props = {
+  account: {
+    label: "account",
+    dense: false,
+    icon: "person",
+  },
+  password: {
+    label: "password",
+    dense: false,
+    icon: "password",
+    type: "password",
+  },
+};
 
 async function submit() {
   try {

@@ -44,12 +44,7 @@
           </q-list>
         </q-tab-panel>
         <q-tab-panel name="QR-code">
-          <div class="q-pa-md" style="width: 60%; margin: auto">
-            <q-responsive :ratio="1">
-              <qrcode-stream :key="_uid" @init="onInit" @decode="onDecode" />
-            </q-responsive>
-          </div>
-          <div class="q-pa-md" style="font-size: 4vw">請掃描QR code</div>
+          <QRReader @btn="btn" />
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -59,10 +54,10 @@
 <script setup>
 import { ref, computed, onBeforeMount } from "vue";
 import { useQuasar } from "quasar";
-import { QrcodeStream } from "vue-qrcode-reader";
 import { Geolocation } from "@capacitor/geolocation";
 import recordsAPI from "./../apis/records";
 import store from "./../store";
+import { QRReader } from "@/components";
 
 const tab = ref("Button");
 const $q = useQuasar();
@@ -71,7 +66,9 @@ const longitude = ref("");
 const position = ref("");
 const workTime = computed(() => store.state.currentPunchData.workTime);
 const offWorkTime = computed(() => store.state.currentPunchData.offWorkTime);
+//
 const duration = computed(() => store.state.currentPunchData.duration / 5.4);
+//以顏色區分是否滿足出席條件
 const color = computed(() => {
   if (duration.value >= 100) {
     return "green";
@@ -122,62 +119,11 @@ async function punch() {
   }
 }
 
-//QR code
-const msg = ref("");
-
-function onDecode(decodedString) {
-  msg.value = decodedString;
-  qrcodePunch(msg.value);
-}
-
-async function onInit(promise) {
-  try {
-    const { capabilities } = await promise;
-    console.log(capabilities);
-  } catch (error) {
-    console.log(error);
-    $q.notify({
-      progress: true,
-      position: "top",
-      type: "negative",
-      message: "Something Wrong! Please Contact Administrator",
-      timeout: 1000,
-    });
-  } finally {
-    console.log("final");
+const btn = function (e) {
+  if (e) {
+    tab.value = "Button";
   }
-}
-
-async function qrcodePunch(secretCode) {
-  try {
-    $q.loading.show();
-    const response = await recordsAPI.qrcodePunchRecord({
-      secretCode: secretCode,
-    });
-    if (response.status === 200) {
-      $q.loading.hide();
-      $q.notify({
-        progress: true,
-        position: "top",
-        type: "positive",
-        message: "Action Success!",
-        timeout: 1000,
-      });
-      store.dispatch("fetchCurrentPunchData");
-      tab.value = "Button";
-    }
-    return true;
-  } catch (error) {
-    $q.loading.hide();
-    $q.notify({
-      progress: true,
-      position: "top",
-      type: "negative",
-      message: `${error.response.data.message}`,
-      timeout: 1000,
-    });
-  }
-}
+};
 
 onBeforeMount(() => {
   store.dispatch("fetchCurrentPunchData");

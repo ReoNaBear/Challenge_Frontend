@@ -2,60 +2,9 @@
   <q-page class="q-pa-md">
     <q-card class="q-pa-md">
       <q-form @submit.stop.prevent="changePassword()" class="fit">
-        <q-input
-          type="password"
-          v-model="oldPassword"
-          label="原本的密碼"
-          :dense="dense"
-          class="q-pb-md"
-        >
-          <template v-slot:prepend>
-            <q-icon name="password" />
-          </template>
-          <template v-slot:append>
-            <q-icon
-              name="close"
-              @click="oldPassword = ''"
-              class="cursor-pointer"
-            />
-          </template>
-        </q-input>
-        <q-input
-          type="password"
-          v-model="newPassword"
-          label="新的密碼"
-          :dense="dense"
-          class="q-pb-md"
-        >
-          <template v-slot:prepend>
-            <q-icon name="check" />
-          </template>
-          <template v-slot:append>
-            <q-icon
-              name="close"
-              @click="newPassword = ''"
-              class="cursor-pointer"
-            />
-          </template>
-        </q-input>
-        <q-input
-          type="password"
-          v-model="checkPassword"
-          label="確認密碼"
-          :dense="dense"
-          class="q-pb-md"
-        >
-          <template v-slot:prepend>
-            <q-icon name="done_all" />
-          </template>
-          <template v-slot:append>
-            <q-icon
-              name="close"
-              @click="checkPassword = ''"
-              class="cursor-pointer"
-            />
-          </template>
-        </q-input>
+        <BaseInput v-bind="props.oldPassword" v-model="oldPassword" />
+        <BaseInput v-bind="props.newPassword" v-model="newPassword" />
+        <BaseInput v-bind="props.checkPassword" v-model="checkPassword" />
         <q-btn
           class="full-width"
           color="indigo-3"
@@ -68,6 +17,7 @@
 </template>
 
 <script setup>
+import { BaseInput } from "@/components";
 import { ref } from "vue";
 import { useQuasar } from "quasar";
 import usersAPI from "./../apis/users";
@@ -78,7 +28,27 @@ const router = useRouter();
 const oldPassword = ref("");
 const newPassword = ref("");
 const checkPassword = ref("");
-const dense = ref(false);
+
+const props = {
+  oldPassword: {
+    label: "原本密碼",
+    dense: false,
+    icon: "password",
+    type: "password",
+  },
+  newPassword: {
+    label: "新的密碼",
+    dense: false,
+    icon: "check",
+    type: "password",
+  },
+  checkPassword: {
+    label: "確認密碼",
+    dense: false,
+    icon: "done_all",
+    type: "password",
+  },
+};
 
 async function changePassword() {
   try {
